@@ -5,7 +5,7 @@ import { Pessoa } from './database';
 const API_URL =
   Platform.OS === 'web'
     ? process.env.EXPO_PUBLIC_API_URL_WEB ?? 'http://localhost:8080'
-    : process.env.EXPO_PUBLIC_API_URL_MOBILE ?? 'http://10.0.2.2:8080';
+    : process.env.EXPO_PUBLIC_API_URL_MOBILE ?? 'http://10.109.25.85:8080';
 
 export async function enviarPessoa(pessoa: Pessoa) {
   const response = await fetch(`${API_URL}/pessoas`, {
@@ -18,6 +18,7 @@ export async function enviarPessoa(pessoa: Pessoa) {
       nome: pessoa.nome,
       email: pessoa.email,
       telefone: pessoa.telefone,
+      cidade: pessoa.cidade,
     }),
   });
 

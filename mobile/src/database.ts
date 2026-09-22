@@ -5,6 +5,7 @@ export type Pessoa = {
   nome: string;
   email: string;
   telefone: string;
+  cidade: string;
   sincronizado: number;
 };
 
@@ -29,27 +30,37 @@ export async function initDatabase() {
       nome TEXT NOT NULL,
       email TEXT,
       telefone TEXT,
+      cidade TEXT,
       sincronizado INTEGER NOT NULL DEFAULT 0
     );
   `);
+
+  try {
+    // Attempt to add the 'cidade' column in case the table already existed without it.
+    await db.execAsync(`ALTER TABLE pessoas ADD COLUMN cidade TEXT;`);
+  } catch (e) {
+    // Ignore error if the column already exists
+  }
 }
 
 export async function inserirPessoa(
   id: string,
   nome: string,
   email: string,
-  telefone: string
+  telefone: string,
+  cidade: string
 ) {
   const db = await getDatabase();
 
   await db.runAsync(
     `INSERT INTO pessoas
-      (id, nome, email, telefone, sincronizado)
-     VALUES (?, ?, ?, ?, 0)`,
+      (id, nome, email, telefone, cidade, sincronizado)
+     VALUES (?, ?, ?, ?, ?, 0)`,
     id,
     nome,
     email,
-    telefone
+    telefone,
+    cidade
   );
 }
 
@@ -57,7 +68,7 @@ export async function listarPessoas() {
   const db = await getDatabase();
 
   return db.getAllAsync<Pessoa>(
-    `SELECT id, nome, email, telefone, sincronizado
+    `SELECT id, nome, email, telefone, cidade, sincronizado
        FROM pessoas
       ORDER BY rowid DESC`
   );
@@ -67,7 +78,7 @@ export async function listarPendentes() {
   const db = await getDatabase();
 
   return db.getAllAsync<Pessoa>(
-    `SELECT id, nome, email, telefone, sincronizado
+    `SELECT id, nome, email, telefone, cidade, sincronizado
        FROM pessoas
       WHERE sincronizado = 0
       ORDER BY rowid`
